@@ -21,7 +21,8 @@ const TodoPage = props => {
     newItemText,
     onChangeNewItemText,
     onExitEditModel,
-    onEnterModel
+    onEnterModel,
+    onToggleItemComplete
   } = props;
   return (
     <Layout>
@@ -62,6 +63,7 @@ const TodoPage = props => {
                   <Checkbox
                     className="todo-item-label"
                     checked={item.isChecked}
+                    onChange={() => onToggleItemComplete(item)}
                   />
                   <Label
                     onClick={() => onEnterModel(item)}

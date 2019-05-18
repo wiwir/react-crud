@@ -13,6 +13,7 @@ class Todo extends Component {
     this.onChangeNewItemText = this.onChangeNewItemText.bind(this);
     this.onExitEditModel = this.onExitEditModel.bind(this);
     this.onEnterModel = this.onEnterModel.bind(this);
+    this.onToggleItemComplete = this.onToggleItemComplete.bind(this);
   }
   onNewItem() {
     this.setState((prevState, props) => {
@@ -78,7 +79,6 @@ class Todo extends Component {
     });
   }
   onEnterModel(item) {
-    console.log("soy item", item);
     this.setState((prevState, props) => {
       return {
         newItemText: item.text,
@@ -87,6 +87,22 @@ class Todo extends Component {
             return {
               ...next,
               isEditting: true
+            };
+          }
+          return next;
+        })
+      };
+    });
+  }
+
+  onToggleItemComplete(item) {
+    this.setState((prevState, props) => {
+      return {
+        items: prevState.items.map(next => {
+          if (next.id === item.id) {
+            return {
+              ...next,
+              isChecked: !item.isChecked
             };
           }
           return next;
@@ -105,6 +121,7 @@ class Todo extends Component {
         onChangeNewItemText={this.onChangeNewItemText}
         onExitEditModel={this.onExitEditModel}
         onEnterModel={this.onEnterModel}
+        onToggleItemComplete={this.onToggleItemComplete}
       />
     );
   }
