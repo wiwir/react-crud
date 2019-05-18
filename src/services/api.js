@@ -12,6 +12,15 @@ async function request(url, method, data) {
     body: data ? JSON.stringify(data) : undefined
   });
   const jsonResponse = await response.json();
+
+  if (response.status !== 200) {
+    let error;
+    if (jsonResponse && jsonResponse.errors) {
+      error = jsonResponse.errors[0].message;
+    }
+    throw Error(error || "There war an error");
+  }
+
   return jsonResponse.data;
 }
 
