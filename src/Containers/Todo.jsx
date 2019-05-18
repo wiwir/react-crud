@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import TodoPage from "../pages/todo";
+import { create, read, update, remove } from "../services/api";
 
 class Todo extends Component {
   constructor(props) {
@@ -15,41 +16,57 @@ class Todo extends Component {
     this.onEnterModel = this.onEnterModel.bind(this);
     this.onToggleItemComplete = this.onToggleItemComplete.bind(this);
   }
-  onNewItem() {
-    this.setState((prevState, props) => {
-      return {
-        items: [
-          ...prevState.items,
-          {
-            id: Date.now(),
-            text: "",
-            isChecked: false,
-            isEditting: true
-          }
-        ]
-      };
-    });
+  async componentDidMount() {
+    try {
+      const items = await read();
+      this.setState({ items });
+    } catch (error) {
+      this.setState({ error: error.message });
+    }
+  }
+  async onNewItem() {
+    try {
+      const newItem = await create({ text: "", isChecked: false });
+      this.setState((prevState, props) => {
+        return {
+          items: [
+            ...prevState.items,
+            {
+              ...newItem,
+              isEditting: true
+            }
+          ]
+        };
+      });
+    } catch (error) {
+      this.setState({ error: error.message });
+    }
   }
 
-  onRemoveItem(item) {
-    const { items } = this.state;
+  async onRemoveItem(item) {
+    try {
+      await remove(item.id);
+      const { items } = this.state;
 
-    const index = items.findIndex(n => n.id === item.id);
+      const index = items.findIndex(n => n.id === item.id);
 
-    console.log("soy index", index);
+      console.log("soy index", index);
 
-    if (index === -1) {
-      return;
+      if (index === -1) {
+        return;
+      }
+      const newItems = items.slice();
+
+      newItems.splice(index, 1);
+
+      this.setState(() => {
+        return {
+          items: newItems
+        };
+      });
+    } catch (error) {
+      this.setState({ error: error.message });
     }
-    const newItems = items.slice();
-
-    newItems.splice(index, 1);
-
-    this.setState(() => {
-      return {
-        items: newItems
-      };
-    });
   }
   onChangeNewItemText(event) {
     const text = event.target.value;
@@ -61,22 +78,29 @@ class Todo extends Component {
       };
     });
   }
-  onExitEditModel(item) {
-    this.setState((prevState, props) => {
-      return {
-        newItemText: "",
-        items: prevState.items.map(next => {
-          if (next.id === item.id) {
-            return {
-              ...next,
-              isEditting: false,
-              text: prevState.newItemText
-            };
-          }
-          return next;
-        })
-      };
-    });
+  async onExitEditModel(item) {
+    try {
+      const updatedItem = await update(item.id, {
+        text: this.state.newItemText
+      });
+
+      this.setState((prevState, props) => {
+        return {
+          newItemText: "",
+          items: prevState.items.map(next => {
+            if (next.id === item.id) {
+              return {
+                ...updatedItem,
+                isEditting: false
+              };
+            }
+            return next;
+          })
+        };
+      });
+    } catch (error) {
+      this.setState({ error: error.message });
+    }
   }
   onEnterModel(item) {
     this.setState((prevState, props) => {
@@ -95,23 +119,27 @@ class Todo extends Component {
     });
   }
 
-  onToggleItemComplete(item) {
-    this.setState((prevState, props) => {
-      return {
-        items: prevState.items.map(next => {
-          if (next.id === item.id) {
-            return {
-              ...next,
-              isChecked: !item.isChecked
-            };
-          }
-          return next;
-        })
-      };
+  async onToggleItemComplete(item) {
+    const updateItemCheckBox = await update(item.id, {
+      isChecked: !item.isChecked
     });
+    try {
+      this.setState((prevState, props) => {
+        return {
+          items: prevState.items.map(next => {
+            if (next.id === item.id) {
+              return updateItemCheckBox;
+            }
+            return next;
+          })
+        };
+      });
+    } catch (error) {
+      this.setState({ error: error.message });
+    }
   }
   render() {
-    const { items, newItemText } = this.state;
+    const { items, newItemText, error } = this.state;
     return (
       <TodoPage
         items={items}
@@ -122,6 +150,7 @@ class Todo extends Component {
         onExitEditModel={this.onExitEditModel}
         onEnterModel={this.onEnterModel}
         onToggleItemComplete={this.onToggleItemComplete}
+        error={error}
       />
     );
   }

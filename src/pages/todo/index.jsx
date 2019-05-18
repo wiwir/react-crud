@@ -22,7 +22,8 @@ const TodoPage = props => {
     onChangeNewItemText,
     onExitEditModel,
     onEnterModel,
-    onToggleItemComplete
+    onToggleItemComplete,
+    error
   } = props;
   return (
     <Layout>
@@ -35,7 +36,7 @@ const TodoPage = props => {
           className="new-todo-item"
           onClick={onNewItem}
         />
-        <Callout intent={Intent.DANGER}>error</Callout>
+       { error && <Callout intent={Intent.DANGER}>{error}</Callout>}
 
         <Divider />
 
@@ -57,6 +58,7 @@ const TodoPage = props => {
                   value={newItemText}
                   onChange={onChangeNewItemText}
                   onBlur={() => onExitEditModel(item)}
+                  inputRef={ref => ref && ref.focus()}
                 />
               ) : (
                 <React.Fragment>
