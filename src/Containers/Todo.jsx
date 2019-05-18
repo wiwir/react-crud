@@ -12,6 +12,7 @@ class Todo extends Component {
     this.onRemoveItem = this.onRemoveItem.bind(this);
     this.onChangeNewItemText = this.onChangeNewItemText.bind(this);
     this.onExitEditModel = this.onExitEditModel.bind(this);
+    this.onEnterModel = this.onEnterModel.bind(this);
   }
   onNewItem() {
     this.setState((prevState, props) => {
@@ -76,6 +77,7 @@ class Todo extends Component {
       };
     });
   }
+  onEnterModel(item) {}
   render() {
     const { items, newItemText } = this.state;
     return (
@@ -86,6 +88,7 @@ class Todo extends Component {
         onRemoveItem={this.onRemoveItem}
         onChangeNewItemText={this.onChangeNewItemText}
         onExitEditModel={this.onExitEditModel}
+        onEnterModel={this.onEnterModel}
       />
     );
   }

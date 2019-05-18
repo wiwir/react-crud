@@ -20,7 +20,8 @@ const TodoPage = props => {
     onRemoveItem,
     newItemText,
     onChangeNewItemText,
-    onExitEditModel
+    onExitEditModel,
+    onEnterModel
   } = props;
   return (
     <Layout>
@@ -63,6 +64,7 @@ const TodoPage = props => {
                     checked={item.isChecked}
                   />
                   <Label
+                    onClick={onEnterModel}
                     className={`todo-item-label ${
                       item.isChecked ? "done" : ""
                     }`}
