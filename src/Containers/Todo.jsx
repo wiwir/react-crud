@@ -77,7 +77,23 @@ class Todo extends Component {
       };
     });
   }
-  onEnterModel(item) {}
+  onEnterModel(item) {
+    console.log("soy item", item);
+    this.setState((prevState, props) => {
+      return {
+        newItemText: item.text,
+        items: prevState.items.map(next => {
+          if (next.id === item.id) {
+            return {
+              ...next,
+              isEditting: true
+            };
+          }
+          return next;
+        })
+      };
+    });
+  }
   render() {
     const { items, newItemText } = this.state;
     return (

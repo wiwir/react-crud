@@ -64,7 +64,7 @@ const TodoPage = props => {
                     checked={item.isChecked}
                   />
                   <Label
-                    onClick={onEnterModel}
+                    onClick={() => onEnterModel(item)}
                     className={`todo-item-label ${
                       item.isChecked ? "done" : ""
                     }`}
